@@ -58,6 +58,19 @@
   column-gap: 50px;
 }
 
+.pointZero {
+  color: black;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid; 
+  min-width: 250px;
+  max-width: 250px;
+  text-wrap: wrap;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
 .pointOne {
   color: black;
   display: flex;
