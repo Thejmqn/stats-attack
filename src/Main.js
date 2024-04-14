@@ -33,12 +33,12 @@ function App() {
 
   const sendFile = () => {
     let formData = new FormData();
-    formData.append('file', uploadFile);
+    formData.append("data", uploadFile, "csvfile.csv");
     console.log(formData);
 
     axios.post(`http://localhost:8080/upload`, formData, {headers: {'Content-Type': 'multipart/form-data'}})
     .then (res => {
-      console.log("Uploaded file with res: " + res);
+      console.log(res);
     })
     .catch(err => {
       console.log("Upload failed with error: " + err);
@@ -56,7 +56,7 @@ function App() {
       <div className="fileUpload">
         <form>
           <h1>UPLOAD FILE</h1>
-          <input type="file" onChange={e => onFileUpload(e)}/>
+          <input type="file" accept=".csv" onChange={e => onFileUpload(e)}/>
           <button type="submit">Upload</button>
         </form>
       </div>
