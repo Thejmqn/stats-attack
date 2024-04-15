@@ -54,12 +54,8 @@ function App() {
         <form>
           <h1>UPLOAD FILE</h1>
           <input type="file" accept=".csv" onChange={e => onFileUpload(e)}/>
-<<<<<<< HEAD
-          <button type="submit">Upload</button>
-=======
           <button onClick={e => sendFile(e)}>Upload</button>
           <h3>{footerNote}</h3>
->>>>>>> de2eff38db59f20d9430f666caf122dbe842bdac
         </form>
       </div>
       
