@@ -22,7 +22,7 @@ function App() {
     e.preventDefault();
     const ext = uploadFile.name.split('.').pop();
         
-    if (ext !== "csv") {
+    if (ext.toLowerCase() !== "csv") {
       setFooterNote("Invalid file format, upload a .csv file");
       return;
     }
