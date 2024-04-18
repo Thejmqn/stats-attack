@@ -3,7 +3,7 @@ img {
 }
 
 h1, h2, h3 {
-    font-family: "Courier New", monospace;
+    font-family: 'Courier New', monospace;
     color: black;
 }
 
@@ -62,6 +62,10 @@ h1, h2, h3 {
     padding: 10px;
 }
 
+.instruction-point h4 {
+    font-family: 'Courier New', monospace;
+}
+
 .file-handling {
     display: flex;
     flex-direction: column;
@@ -96,7 +100,7 @@ input[type="file"] {
     cursor: pointer;
     box-sizing: content-box; /* Make buttons dimension properly */
 
-    font-family: "Courier New", monospace;
+    font-family: 'Courier New', monospace;
     font-weight: bold;
     font-size: calc(10px + 2vmin);
     /* Center Text */
