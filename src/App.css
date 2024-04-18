@@ -68,7 +68,7 @@ h1, h2, h3 {
     align-items: center;
     text-align: center;
     background-color: #ffffff;
-    min-height: 300px;
+    min-height: 350px;
     width: 100%;
     margin-bottom: 0;
     position: relative; /* For status text positioning */
