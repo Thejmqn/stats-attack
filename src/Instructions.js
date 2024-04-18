@@ -6,9 +6,9 @@ function Instructions() {
             <div className = 'instructions'>
               <h3 id = 'instructionHeader'>-------------------------- Instructions --------------------------</h3>
 
-              <div className = 'instructionPoints'>
+              <div className = 'instruction-point-list'>
 
-                <div className = 'pointColumn'>
+                <div className = 'instruction-point'>
                     <h4 style ={{fontFamily: 'Courier New'}}>Guidelines for calendar events:</h4>
                     <ul>
                         <li>Categorize the events you would like to be processed in the "Purple Category" when creating events in the calendar</li>
@@ -18,7 +18,7 @@ function Instructions() {
 
                 </div>
 
-                <div className = 'pointColumn'>
+                <div className = 'instruction-point'>
                     <h4 style ={{fontFamily: 'Courier New'}}>1. Export Outlook Calendar</h4>
                     <ul>
                         <li>Open the Outlook App (cannot be done on browser)</li>
@@ -28,7 +28,7 @@ function Instructions() {
                     </ul>
                 </div>
 
-                <div className = 'pointColumn'>
+                <div className = 'instruction-point'>
                     <h4 style ={{fontFamily: 'Courier New'}}>2. Upload the .csv file</h4>
                     <ul>
                         <li>Click on the "upload" button bellow</li>
@@ -37,7 +37,7 @@ function Instructions() {
                 </div>
 
 
-                <div className = 'pointColumn'>
+                <div className = 'instruction-point'>
                     <h4 style ={{fontFamily: 'Courier New'}}>3. Download new .csv file</h4>
                     <ul>
                         <li>Click the "download" button below</li>

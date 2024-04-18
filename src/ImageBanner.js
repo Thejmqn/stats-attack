@@ -6,7 +6,7 @@ import ClemonsLibrary from './Images/ClemonsLibrary.png'
 function ImageBanner() {
     return (
         <>
-            <div className='imageBanner'>
+            <div className='image-banner'>
 
                 <img src={BrownLibrary} alt='Brown' />
 

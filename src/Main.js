@@ -64,7 +64,7 @@ function App() {
             <ImageBanner/>
 
             <Instructions/>
-            <div className="fileHandling">
+            <div className="file-handling">
                 <h3>------------------------- File Upload -------------------------</h3>
                 <div className="file-button-list">
                     <label htmlFor="file-upload" className="file-button">Select File</label>
