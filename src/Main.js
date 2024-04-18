@@ -8,16 +8,17 @@ import ImageBanner from './ImageBanner.js'
 
 function App() {
     const [uploadFile, setUploadFile] = useState(null);
-    const [footerNote, setFooterNote] = useState("No file uploaded.");
     const [downloadBlob, setDownloadBlob] = useState(null);
-    const [downloadNote, setDownloadNote] = useState("Click me after uploading a file!");
+    const [fileStatus, setFileStatus] = useState("No file selected.");
 
     const onFileUpload = e => {
+        e.preventDefault();
         const file = e.target.files;
 
         if (file && file.length > 0) {
             setUploadFile(file[0]);
-            setFooterNote("Uploaded file" + file[0].name);
+            setFileStatus("Selected file" + file[0].name);
+            setDownloadBlob(null);
         }
     }
 
@@ -26,11 +27,9 @@ function App() {
         const ext = uploadFile.name.split('.').pop();
 
         if (ext !== "csv") {
-            setFooterNote("Invalid file format, upload a .csv file");
+            setFileStatus("Invalid file format, select a .csv file");
             return;
         }
-
-        setFooterNote("Uploaded file " + uploadFile.name);
 
         let formData = new FormData();
         formData.append("data", uploadFile, "csvfile.csv");
@@ -40,10 +39,13 @@ function App() {
             .then(res => {
                 const blob = new Blob([res.data], {type: 'text/plain;charset=utf-8'});
                 setDownloadBlob(blob);
+                setUploadFile(null);
+                setFileStatus("Uploaded and processed file " + uploadFile.name);
 
             })
             .catch(err => {
                 console.log("Upload failed with error: " + err);
+                setFileStatus("Upload failed, try again.")
             });
     }
 
@@ -63,17 +65,20 @@ function App() {
 
             <Instructions/>
             <div className="fileHandling">
-                <div className="fileUpload">
-                    <h1>UPLOAD FILE</h1>
-                    <label htmlFor="file-upload" className="file-button">File Upload</label>
+                <h3>------------------------- File Upload -------------------------</h3>
+                <div className="file-button-list">
+                    <label htmlFor="file-upload" className="file-button">Select File</label>
                     <input id="file-upload" type="file" accept=".csv" onChange={e => onFileUpload(e)}/>
-                    <button onClick={e => sendFile(e)}>Upload</button>
-                    <h3>{footerNote}</h3>
+
+                    {uploadFile !== null &&
+                        <button className="file-button" onClick={e => sendFile(e)}>Upload File</button>
+                    }
+
+                    {downloadBlob !== null &&
+                        <button className="file-button" onClick={e => downloadFile(e)}>Download File</button>
+                    }
                 </div>
-                <div className="fileDownload">
-                    <h2 id="downloadButton_" onClick={e => downloadFile(e)}>Download File</h2>
-                    <p>{downloadNote}</p>
-                </div>
+                <h2 id="file-status">{fileStatus}</h2>
             </div>
 
             <div className='footer'>

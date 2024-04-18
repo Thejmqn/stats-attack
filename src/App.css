@@ -1,119 +1,124 @@
 img {
-  width: 31%;
+    width: 31%;
 }
 
 h1, h2, h3 {
-  font-family: "Courier New", monospace;
-  color: black;
+    font-family: "Courier New", monospace;
+    color: black;
 }
 
 .header {
-  display: flex;
-  flex-direction: column;
-  background-image: url(HeaderBackground4.jpg);
-  background-size: 100%;
-  align-items: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-image: url(Images/HeaderBackground4.jpg);
+    background-size: 100%;
 }
 
 .title {
-  height: 50px;
-  padding-bottom: 0;
-  margin-bottom: 0;
-  font-family: 'Impact';
+    height: 50px;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    font-family: 'Impact';
 }
 
 .subtitle {
-  margin-top: 0;
+    margin-top: 0;
 }
 
 .imageBanner {
-  display: flex;
-  justify-content: center;
-  column-gap: 10px;
-  background-image: url(HeaderBackground4.jpg);
-  background-size: 100%;
+    display: flex;
+    justify-content: center;
+    column-gap: 10px;
+    background-image: url(Images/HeaderBackground4.jpg);
+    background-size: 100%;
 }
 
 .instructions {
-  border: 2px solid;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: rgb(242, 241, 241);
+    border: 2px solid;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgb(242, 241, 241);
 }
 
 #instructionHeader {
-  /*color: black;*/
-  margin-bottom: 3px;
+    margin-bottom: 3px;
 }
 
 .instructionPoints {
-  display: flex;
-  flex-direction: row;
-  column-gap: 50px;
+    display: flex;
+    flex-direction: row;
+    column-gap: 50px;
 }
 
 .pointColumn {
-  /*color: black;*/
-  display: flex;
-  flex-direction: column;
-  border: 2px solid;
-  min-width: 250px;
-  max-width: 250px;
-  align-items: center;
-  margin-bottom: 10px;
-  padding: 10px;
+    /*color: black;*/
+    display: flex;
+    flex-direction: column;
+    border: 2px solid;
+    width: 250px;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
 }
 
 .fileHandling {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: calc(10px + 2vmin);
-  text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background-color: #ffffff;
+    min-height: 300px;
+    width: 100%;
+    margin-bottom: 0;
+    position: relative; /* For status text positioning */
 }
 
-.fileUpload {
-  background-color: #ffffff;
-  min-height: 300px;
-  width: 100%;
-  display: flex;
-}
 
 input[type="file"] {
-  display: none;
+    display: none;
+}
+
+.file-button-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-items: center;
 }
 
 .file-button {
-  min-width: 250px;
-  max-width: 250px;
-  padding: 0.5%;
-  border-style: inset;
-  border-width: 3px;
-  border-color: grey;
-  background-color: #c3c3c3;
-  font-family: "Courier New", monospace;
-  font-weight: bold;
+    width: 250px;
+    height: 50px;
+    padding: 0.5%;
+    margin: 5%;
+    border: 3px inset grey;
+    background-color: #c3c3c3;
+
+    cursor: pointer;
+    box-sizing: content-box; /* Make buttons dimension properly */
+
+    font-family: "Courier New", monospace;
+    font-weight: bold;
+    font-size: calc(10px + 2vmin);
+    /* Center Text */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .file-button:hover {
-  background-color: #e1e1e1;
+    background-color: #e1e1e1;
 }
 
-.fileDownload {
-  align-items: center;
-  justify-content: center;
-  display: flex;
-  flex-direction: column;
-  margin: auto;
-  background-color: #e1e1e1;
-  padding-top: calc(10px + 2vmin);
-  width: 100%
+#file-status {
+    margin-top: 10px;
+    justify-self: flex-end;
+    position: absolute;
+    bottom: 0;
 }
-
-
 
 .footer {
-  background-color: rgb(75, 71, 71);
-  min-height: 150px;
+    background-color: rgb(75, 71, 71);
+    min-height: 150px;
 }
