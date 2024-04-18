@@ -13,6 +13,57 @@ import (
 	"os"
 )
 
+type outlookData struct {
+	subject            string
+	startDate          string
+	startTime          string
+	endDate            string
+	endTime            string
+	allDayEvent        string
+	reminderOn         string
+	reminderDate       string
+	reminderTime       string
+	meetingOrganizer   string
+	requiredAttendees  string
+	optionalAttendees  string
+	meetingResources   string
+	billingInformation string
+	categories         string
+	description        string
+	location           string
+	mileage            string
+	priority           string
+	private            string
+	sensitivity        string
+	showTimeAs         string
+}
+
+type libraryData struct {
+	startDate              string
+	internalNotes          string
+	enteredBy              string
+	additionalNotes        string
+	additionalStaff        string
+	additionalUsers        string
+	arlInteractionType     string
+	attendeeType           string
+	dateOfTheInteraction   string
+	department             string
+	description            string
+	grantRelated           string
+	medium                 string
+	prePostTime            string
+	primaryUserName        string
+	primaryUserComputingID string
+	rdeSneGroup            string
+	referral               string
+	school                 string
+	sessionDuration        string
+	sourceSoftware         string
+	staff                  string
+	topic                  string
+}
+
 func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/testBackend/{input}", inputHandler).Methods(http.MethodGet)
