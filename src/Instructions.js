@@ -4,11 +4,11 @@ function Instructions() {
     return (
         <>
             <div className = 'instructions'>
-              <h3 className = 'instructionHeader'>-------------------------- Instructions --------------------------</h3>
+              <h3 id = 'instructionHeader'>-------------------------- Instructions --------------------------</h3>
 
               <div className = 'instructionPoints'>
 
-                <div className = 'pointZero'>
+                <div className = 'pointColumn'>
                     <h4 style ={{fontFamily: 'Courier New'}}>Guidelines for calendar events:</h4>
                     <ul>
                         <li>Categorize the events you would like to be processed in the "Purple Category" when creating events in the calendar</li>
@@ -18,7 +18,7 @@ function Instructions() {
 
                 </div>
 
-                <div className = 'pointOne'>
+                <div className = 'pointColumn'>
                     <h4 style ={{fontFamily: 'Courier New'}}>1. Export Outlook Calendar</h4>
                     <ul>
                         <li>Open the Outlook App (cannot be done on browser)</li>
@@ -27,17 +27,17 @@ function Instructions() {
                         <li>Choose where to store the .csv file with desired date range and finish</li>
                     </ul>
                 </div>
-                
-                <div className = 'pointTwo'>
+
+                <div className = 'pointColumn'>
                     <h4 style ={{fontFamily: 'Courier New'}}>2. Upload the .csv file</h4>
                     <ul>
                         <li>Click on the "upload" button bellow</li>
                         <li>Choose the .csv file downloaded from step 1</li>
                     </ul>
                 </div>
-                
 
-                <div className = 'pointThree'>
+
+                <div className = 'pointColumn'>
                     <h4 style ={{fontFamily: 'Courier New'}}>3. Download new .csv file</h4>
                     <ul>
                         <li>Click the "download" button below</li>
@@ -45,9 +45,9 @@ function Instructions() {
                         <li>Enjoy watching the fields automatically filled!</li>
                     </ul>
                 </div>
-                
+
               </div>
-              
+
             </div>
         </>
     )
