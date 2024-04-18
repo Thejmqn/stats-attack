@@ -1,5 +1,4 @@
 import './App.css';
-import React from 'react';
 import Header from './Header.js';
 import Instructions from './Instructions.js';
 import ImageBanner from './ImageBanner.js'
@@ -21,4 +20,4 @@ function App() {
     );
 }
 
-export default App;
+export default App
