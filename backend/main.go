@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"github.com/dimchansky/utfbom"
+	"github.com/gocarina/gocsv"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"io"
@@ -14,54 +17,54 @@ import (
 )
 
 type outlookData struct {
-	subject            string
-	startDate          string
-	startTime          string
-	endDate            string
-	endTime            string
-	allDayEvent        string
-	reminderOn         string
-	reminderDate       string
-	reminderTime       string
-	meetingOrganizer   string
-	requiredAttendees  string
-	optionalAttendees  string
-	meetingResources   string
-	billingInformation string
-	categories         string
-	description        string
-	location           string
-	mileage            string
-	priority           string
-	private            string
-	sensitivity        string
-	showTimeAs         string
+	Subject            string `csv:"Subject"`
+	StartDate          string `csv:"Start Date"`
+	StartTime          string `csv:"Start Time"`
+	EndDate            string `csv:"End Date"`
+	EndTime            string `csv:"End Time"`
+	AllDayEvent        string `csv:"All day event"`
+	ReminderOn         string `csv:"Reminder on/off"`
+	ReminderDate       string `csv:"Reminder Date"`
+	ReminderTime       string `csv:"Reminder Time"`
+	MeetingOrganizer   string `csv:"Meeting Organizer"`
+	RequiredAttendees  string `csv:"Required Attendees"`
+	OptionalAttendees  string `csv:"Optional Attendees"`
+	MeetingResources   string `csv:"Meeting Resources"`
+	BillingInformation string `csv:"Billing Information"`
+	Categories         string `csv:"Categories"`
+	Description        string `csv:"Description"`
+	Location           string `csv:"Location"`
+	Mileage            string `csv:"Mileage"`
+	Priority           string `csv:"Priority"`
+	Private            string `csv:"Private"`
+	Sensitivity        string `csv:"Sensitivity"`
+	ShowTimeAs         string `csv:"Show time as"`
 }
 
 type libraryData struct {
-	startDate              string
-	internalNotes          string
-	enteredBy              string
-	additionalNotes        string
-	additionalStaff        string
-	additionalUsers        string
-	arlInteractionType     string
-	attendeeType           string
-	dateOfTheInteraction   string
-	department             string
-	description            string
-	grantRelated           string
-	medium                 string
-	prePostTime            string
-	primaryUserName        string
-	primaryUserComputingID string
-	rdeSneGroup            string
-	referral               string
-	school                 string
-	sessionDuration        string
-	sourceSoftware         string
-	staff                  string
-	topic                  string
+	StartDate              string `csv:"State Date"`
+	InternalNotes          string `csv:"Internal Notes"`
+	EnteredBy              string `csv:"Entered By"`
+	AdditionalNotes        string `csv:"Additional Notes"`
+	AdditionalStaff        string `csv:"Additional Staff"`
+	AdditionalUsers        string `csv:"Additional Users"`
+	ArlInteractionType     string `csv:"ARL Interaction Type"`
+	AttendeeType           string `csv:"Attendee Type"`
+	DateOfTheInteraction   string `csv:"Date of the Interaction"`
+	Department             string `csv:"Department"`
+	Description            string `csv:"Description"`
+	GrantRelated           string `csv:"Grant Related?"`
+	Medium                 string `csv:"Medium"`
+	PrePostTime            string `csv:"Pre-post-time"`
+	PrimaryUserName        string `csv:"Primary User Name"`
+	PrimaryUserComputingID string `csv:"Primary User's Computing ID"`
+	RdeSneGroup            string `csv:"RDS+SNE Group"`
+	Referral               string `csv:"Referral"`
+	School                 string `csv:"School"`
+	SessionDuration        string `csv:"Session Duration"`
+	SourceSoftware         string `csv:"Source/Software"`
+	Staff                  string `csv:"Staff"`
+	Topic                  string `csv:"Topic"`
 }
 
 func main() {
@@ -69,7 +72,8 @@ func main() {
 	router.HandleFunc("/testBackend/{input}", inputHandler).Methods(http.MethodGet)
 	router.HandleFunc("/upload", uploadHandler).Methods(http.MethodPost)
 	router.Use(mux.CORSMethodMiddleware(router))
-	log.Fatal(http.ListenAndServe(":8080", router))
+	fmt.Println("Server started on port 8080")
+	log.Fatal(http.ListenAndServe("localhost:8080", router))
 }
 
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
@@ -94,25 +98,29 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	if copyErr != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Saved file as " + fileName)
+	fmt.Println("Received data, saving as " + fileName)
 
 	readFile, err := os.OpenFile(fileName, os.O_RDONLY, os.ModePerm)
 	if err != nil {
 		log.Fatal(err)
 	}
-	csvReader := csv.NewReader(readFile)
-	records, err := csvReader.ReadAll()
-	if err != nil {
-		log.Fatal(err)
+
+	var dataList []*outlookData
+	gocsv.SetCSVReader(func(in io.Reader) gocsv.CSVReader {
+		r := csv.NewReader(in)
+		r.LazyQuotes = true
+		return r
+	})
+	bodyWithoutBom, err := ioutil.ReadAll(utfbom.SkipOnly(bufio.NewReader(readFile)))
+	if err := gocsv.UnmarshalBytes(bodyWithoutBom, &dataList); err != nil {
+		panic(err)
 	}
-	updatedRecords := handleCSV(records)
+	updatedRecords := handleCSV(dataList)
 
 	writeFile, err := os.Create(secondFileName)
-	writer := csv.NewWriter(writeFile)
-	defer writer.Flush()
-	err = writer.WriteAll(updatedRecords)
+	err = gocsv.MarshalFile(&updatedRecords, writeFile)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	w.Header().Set("Content-Type", "text/csv")
@@ -125,6 +133,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println("Successfully sent processed data, deleting " + fileName)
 
 	file.Close()
 	csvFile.Close()
@@ -140,9 +149,17 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func handleCSV(data [][]string) [][]string {
-	newData := data
-	newData[2][3] = "TEST CELL UPDATE"
+func handleCSV(data []*outlookData) []*libraryData {
+	var newData []*libraryData
+	for _, outlookInstance := range data {
+		var libraryInstance libraryData
+
+		//edit here
+		libraryInstance.StartDate = outlookInstance.StartDate
+		//end here
+
+		newData = append(newData, &libraryInstance)
+	}
 	return newData
 }
 
