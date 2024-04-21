@@ -1,68 +1,23 @@
 import './App.css';
-import { useState } from 'react';
-import axios from 'axios';
 import Header from './Header.js';
 import Instructions from './Instructions.js';
 import ImageBanner from './ImageBanner.js'
+import FileHandling from "./FileHandling";
 
 function App() {
-  const [uploadFile, setUploadFile] = useState(null);
-  const [footerNote, setFooterNote] = useState("No file uploaded.");
+    return (
+        <div>
+            <Header/>
 
-  const onFileUpload = e => {
-      const file = e.target.files;
-      
-      if (file && file.length > 0) {
-        setUploadFile(file[0]);
-        setFooterNote("Uploaded file" + file[0].name);
-      }
-  }
+            <ImageBanner/>
 
-  const sendFile = e => {
-    e.preventDefault();
-    const ext = uploadFile.name.split('.').pop();
-        
-    if (ext.toLowerCase() !== "csv") {
-      setFooterNote("Invalid file format, upload a .csv file");
-      return;
-    }
+            <Instructions/>
 
-    setFooterNote("Uploaded file " + uploadFile.name);
+            <FileHandling/>
 
-    let formData = new FormData();
-    formData.append("data", uploadFile, "csvfile.csv");
-    console.log(formData);
-
-    axios.post(`http://localhost:8080/upload`, formData, {headers: {'Content-Type': 'multipart/form-data'}})
-    .then (res => {
-      console.log(res);
-    })
-    .catch(err => {
-      console.log("Upload failed with error: " + err);
-    });
-  }
-
-  return (
-    <div>
-      <Header />
-      
-      <ImageBanner />
-
-      <Instructions />
-
-      <div className="fileUpload">
-        <form>
-          <h1>UPLOAD FILE</h1>
-          <input type="file" accept=".csv" onChange={e => onFileUpload(e)}/>
-          <button onClick={e => sendFile(e)}>Upload</button>
-          <h3>{footerNote}</h3>
-        </form>
-      </div>
-      
-      <div className='footer'>
-      </div>
-    </div>
-  );
+            <div className="footer"></div>
+        </div>
+    );
 }
 
-export default App;
+export default App

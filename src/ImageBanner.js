@@ -1,12 +1,12 @@
 import './App.css';
-import BrownLibrary from './BrownLibrary.png'
-import ShannonLibrary from './ShannonLibrary.png'
-import ClemonsLibrary from './ClemonsLibrary.png'
+import BrownLibrary from './Images/BrownLibrary.png'
+import ShannonLibrary from './Images/ShannonLibrary.png'
+import ClemonsLibrary from './Images/ClemonsLibrary.png'
 
 function ImageBanner() {
     return (
         <>
-            <div className='imageBanner'>
+            <div className='image-banner'>
 
                 <img src={BrownLibrary} alt='Brown' />
 

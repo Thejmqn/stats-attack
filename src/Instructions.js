@@ -4,11 +4,11 @@ function Instructions() {
     return (
         <>
             <div className = 'instructions'>
-              <h3 className = 'instructionHeader'>-------------------------- Instructions --------------------------</h3>
+              <h3 id = 'instructionHeader'>-------------------------- Instructions --------------------------</h3>
 
-              <div className = 'instructionPoints'>
+              <div className = 'instruction-point-list'>
 
-                <div className = 'pointZero'>
+                <div className = 'instruction-point'>
                     <h4 style ={{fontFamily: 'Courier New'}}>Guidelines for calendar events:</h4>
                     <ul>
                         <li>Categorize the events you would like to be processed in the "Purple Category" when creating events in the calendar</li>
@@ -18,8 +18,8 @@ function Instructions() {
 
                 </div>
 
-                <div className = 'pointOne'>
-                    <h4 style ={{fontFamily: 'Courier New'}}>1. Export Outlook Calendar</h4>
+                <div className = 'instruction-point'>
+                    <h4>1. Export Outlook Calendar</h4>
                     <ul>
                         <li>Open the Outlook App (cannot be done on browser)</li>
                         <li>Click File {'>'} Open & Export {'>'} Import/Export </li>
@@ -27,27 +27,28 @@ function Instructions() {
                         <li>Choose where to store the .csv file with desired date range and finish</li>
                     </ul>
                 </div>
-                
-                <div className = 'pointTwo'>
+
+                <div className = 'instruction-point'>
                     <h4 style ={{fontFamily: 'Courier New'}}>2. Upload the .csv file</h4>
                     <ul>
-                        <li>Click on the "upload" button bellow</li>
+                        <li>Click the "Select File" button bellow</li>
                         <li>Choose the .csv file downloaded from step 1</li>
+                        <li>Click the "Upload File" button that appears after selecting a file</li>
                     </ul>
                 </div>
-                
 
-                <div className = 'pointThree'>
+
+                <div className = 'instruction-point'>
                     <h4 style ={{fontFamily: 'Courier New'}}>3. Download new .csv file</h4>
                     <ul>
-                        <li>Click the "download" button below</li>
+                        <li>Click the "Download File" button below</li>
                         <li>Upload the new .csv file to the Library's webform</li>
                         <li>Enjoy watching the fields automatically filled!</li>
                     </ul>
                 </div>
-                
+
               </div>
-              
+
             </div>
         </>
     )
