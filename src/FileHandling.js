@@ -5,7 +5,7 @@ import {useState} from 'react';
 function FileHandling() {
     const [uploadFile, setUploadFile] = useState(null);
     const [downloadBlob, setDownloadBlob] = useState(null);
-    const [fileStatus, setFileStatus] = useState(null);
+    const [fileStatus, setFileStatus] = useState("Select a file to upload");
 
     const onFileUpload = e => {
         e.preventDefault();
@@ -54,7 +54,8 @@ function FileHandling() {
 
     return (
         <div className="file-handling">
-            <h3>------------------------- File Upload -------------------------</h3>
+            <h3 className="section-header">------------------------- File Upload -------------------------</h3>
+            <h2 id="file-status">{fileStatus}</h2>
             <div className="file-button-list">
                 <label htmlFor="file-upload" className="file-button">Select File</label>
                 <input id="file-upload" type="file" accept=".csv" onChange={e => onFileUpload(e)}/>
@@ -67,7 +68,6 @@ function FileHandling() {
                     <button className="file-button" onClick={e => downloadFile(e)}>Download File</button>
                 }
             </div>
-            <h2 id="file-status">{fileStatus}</h2>
         </div>
     );
 }
