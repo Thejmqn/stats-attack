@@ -5,6 +5,10 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"github.com/dimchansky/utfbom"
+	"github.com/gocarina/gocsv"
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	"io"
 	"io/ioutil"
 	"log"
@@ -13,12 +17,13 @@ import (
 	"regexp"
 	"strings"
 	"time"
-
-	"github.com/dimchansky/utfbom"
-	"github.com/gocarina/gocsv"
-	"github.com/google/uuid"
-	"github.com/gorilla/mux"
 )
+
+type formData struct {
+	FirstName   string
+	LastName    string
+	ComputingID string
+}
 
 type outlookData struct {
 	Subject            string `csv:"Subject"`
@@ -91,6 +96,10 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	var librarianInfo formData
+	librarianInfo.FirstName = r.FormValue("firstName")
+	librarianInfo.LastName = r.FormValue("lastName")
+	librarianInfo.ComputingID = r.FormValue("computingID")
 	enableCORS(&w)
 
 	csvFile, err := os.Create(fileName)
@@ -119,7 +128,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	if err := gocsv.UnmarshalBytes(bodyWithoutBom, &dataList); err != nil {
 		panic(err)
 	}
-	updatedRecords := handleCSV(dataList)
+	updatedRecords := handleCSV(dataList, librarianInfo)
 
 	writeFile, err := os.Create(secondFileName)
 	err = gocsv.MarshalFile(&updatedRecords, writeFile)
@@ -153,19 +162,19 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func handleCSV(data []*outlookData) []*libraryData {
+func handleCSV(data []*outlookData, librarianInfo formData) []*libraryData {
 	var newData []*libraryData
 	const ExportCategory = "Purple category"
 	for _, outlookInstance := range data {
 		if outlookInstance.Categories == ExportCategory {
-			libraryInstance := mapCategories(outlookInstance)
+			libraryInstance := mapCategories(outlookInstance, librarianInfo)
 			newData = append(newData, &libraryInstance)
 		}
 	}
 	return newData
 }
 
-func mapCategories(input *outlookData) libraryData {
+func mapCategories(input *outlookData, librarianInfo formData) libraryData {
 	var output libraryData
 	output.StartDate = input.StartDate
 	output.Topic = input.Subject
@@ -174,18 +183,8 @@ func mapCategories(input *outlookData) libraryData {
 	if err != nil {
 		log.Fatal(err)
 	}
-	name := reName.FindString(input.MeetingOrganizer)
-	if name == "" {
-		output.EnteredBy = "NOT SPECIFIED"
-	} else {
-		output.EnteredBy = name
-	}
 	output.DateOfTheInteraction = input.StartDate
 	digitFinder, err := regexp.Compile(`\(([^)]+)\)`)
-	if err != nil {
-		log.Fatal(err)
-	}
-	librarianDigits := digitFinder.FindString(input.MeetingOrganizer)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -195,12 +194,8 @@ func mapCategories(input *outlookData) libraryData {
 	} else {
 		output.PrimaryUserComputingID = userDigits[1 : len(userDigits)-1]
 	}
-	if strings.Index(name, " ") < 0 || strings.Index(name, ",") < 0 || len(librarianDigits) < 3 {
-		output.Staff = "INVALID NAME"
-	} else {
-		output.Staff = librarianDigits[1:len(librarianDigits)-1] + " " + name[strings.Index(name, " ")+1:] +
-			" " + name[0:strings.Index(name, ",")]
-	}
+	output.EnteredBy = librarianInfo.LastName + ", " + librarianInfo.FirstName
+	output.Staff = librarianInfo.ComputingID + " " + librarianInfo.FirstName + " " + librarianInfo.LastName
 	output.PrimaryUserName = reName.FindString(input.RequiredAttendees) + " "
 	output.School = "College"
 	output.ArlInteractionType = "Other"
@@ -226,9 +221,8 @@ func mapCategories(input *outlookData) libraryData {
 			output.PrePostTime = "0"
 			output.Topic = "NONE SPECIFIED"
 		} else {
-			school := schoolAbbreviations(types[0][1:])
-			output.School = strings.ReplaceAll(strings.ReplaceAll(school, ",", ""), " ", "")
-			output.RdeSneGroup = strings.ReplaceAll(strings.ReplaceAll(types[1], ",", ""), " ", "")
+			output.School = schoolAbbreviations(types[0][1:])
+			output.RdeSneGroup = groupAbbreviation(types[1])
 			output.Topic = strings.ReplaceAll(strings.ReplaceAll(types[2], ",", ""), " ", "")
 			output.PrePostTime = strings.ReplaceAll(strings.ReplaceAll(types[3], ",", ""), " ", "")
 		}
