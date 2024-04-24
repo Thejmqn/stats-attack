@@ -1,10 +1,20 @@
-img {
+.image-banner img {
     width: 31%;
 }
 
 h1, h2, h3 {
     font-family: 'Courier New', monospace;
     color: black;
+}
+
+.site-section {
+    border: 2px solid;
+    border-bottom: 0;
+}
+
+.section-header {
+    margin-bottom: 5px;
+    text-align: center;
 }
 
 .header {
@@ -34,35 +44,119 @@ h1, h2, h3 {
     background-size: 100%;
 }
 
-.instructions {
-    border: 2px solid;
+.calendar-setup {
+    background-color: rgb(242, 241, 241);
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: rgb(242, 241, 241);
+
 }
 
-#instruction-header {
-    margin-bottom: 3px;
+.setup-point-list {
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+}
+
+.setup-point {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid;
+    align-items: center;
+    margin: 1%;
+    padding: 0 10px 0 10px;
+    justify-items: center;
+}
+
+.setup-point-wide {
+    width: 100%;
+}
+
+.setup-point-thin {
+    width: 40%;
+    align-self: start;
+}
+
+.setup-hor-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.setup-hor-container img {
+    border: 2px solid;
+    width: 60%;
+    height: calc(0.78 * 60%);
+    margin: 1%;
+    padding: 10px;
+    justify-self: flex-end;
+}
+
+.Collapsible__contentInner {
+    margin-bottom: 10px;
+    line-height: 2px;
+    text-wrap: normal;
+}
+
+
+.Collapsible__trigger {
+    display: block;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    cursor: pointer;
+
+    /*&:after {*/
+    /*    content: url("Images/down-chevron.png");*/
+    /*    height: 4px;*/
+    /*    width: 4px;*/
+    /*    !*position: absolute;*!*/
+    /*    !*right: 10px;*!*/
+    /*    !*top: 10px;*!*/
+    /*    display: block;*/
+    /*    transition: transform 300ms;*/
+    /*}*/
+
+    /*&.is-open {*/
+    /*    &:after {*/
+    /*        transform: rotateZ(180deg);*/
+    /*    }*/
+    /*}*/
+}
+
+#abbreviations {
+    align-items: start;
+    line-height: 200%;
+    margin-bottom: 5%;
+}
+
+
+
+.instructions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgb(255, 255, 255);
 }
 
 .instruction-point-list {
     display: flex;
     flex-direction: row;
-    column-gap: 50px;
+    column-gap: calc(10px + 3vw);
+    justify-content: center;
 }
 
 .instruction-point {
     display: flex;
     flex-direction: column;
     border: 2px solid;
-    width: 250px;
+    width: 50%;
+    max-width: 200px;
     align-items: center;
     margin-bottom: 10px;
     padding: 10px;
 }
 
-.instruction-point h4 {
+.instruction-point h4, .setup-point h4 {
     font-family: 'Courier New', monospace;
 }
 
@@ -70,31 +164,23 @@ h1, h2, h3 {
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
-    background-color: #ffffff;
-    border: 2px solid;
-    border-top: 0;
+    justify-items: center;
+
+    background-color: rgb(242, 241, 241);
     min-height: 350px;
     margin-bottom: 0;
-    position: relative; /* For status text positioning */
+    border-bottom: 2px;
 }
 
 input[type="file"] {
     display: none;
 }
 
-.file-button-list {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-items: center;
-}
-
 .file-button {
-    width: 250px;
-    height: 50px;
+    min-width: calc(175px + 5vw);
+    min-height: calc(40px + 1vh);
     padding: 0.5%;
-    margin: 5%;
+    margin-bottom: calc(7px + 3vh);
     border: 3px inset grey;
     background-color: #c3c3c3;
 
@@ -103,7 +189,7 @@ input[type="file"] {
 
     font-family: 'Courier New', monospace;
     font-weight: bold;
-    font-size: calc(10px + 2vmin);
+    font-size: 21px;
     /* Center Text */
     display: flex;
     align-items: center;
@@ -115,9 +201,7 @@ input[type="file"] {
 }
 
 #file-status {
-    margin-top: 10px;
-    justify-self: flex-end;
-    position: absolute;
+    margin-top: 0;
     bottom: 0;
 }
 

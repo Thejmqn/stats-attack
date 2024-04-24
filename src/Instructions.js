@@ -3,20 +3,10 @@ import './App.css';
 function Instructions() {
     return (
         <>
-            <div className = 'instructions'>
-              <h3 id = 'instructionHeader'>-------------------------- Instructions --------------------------</h3>
+            <div className = 'instructions site-section'>
+              <h3 className = 'section-header'>-------------------------- Instructions --------------------------</h3>
 
               <div className = 'instruction-point-list'>
-
-                <div className = 'instruction-point'>
-                    <h4 style ={{fontFamily: 'Courier New'}}>Guidelines for calendar events:</h4>
-                    <ul>
-                        <li>Categorize the events you would like to be processed in the "Purple Category" when creating events in the calendar</li>
-                        <li>Fill all the fields for each event</li>
-                        <li>Special instructions: For "location" of event for interactions not in person, specify according to the "Medium" of the web form</li>
-                    </ul>
-
-                </div>
 
                 <div className = 'instruction-point'>
                     <h4>1. Export Outlook Calendar</h4>
@@ -29,7 +19,7 @@ function Instructions() {
                 </div>
 
                 <div className = 'instruction-point'>
-                    <h4 style ={{fontFamily: 'Courier New'}}>2. Upload the .csv file</h4>
+                    <h4>2. Upload the .csv file</h4>
                     <ul>
                         <li>Click the "Select File" button bellow</li>
                         <li>Choose the .csv file downloaded from step 1</li>

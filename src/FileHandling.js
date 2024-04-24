@@ -22,8 +22,8 @@ function FileHandling() {
         e.preventDefault();
         const ext = uploadFile.name.split('.').pop();
 
-        if (ext !== "csv") {
-            setFileStatus( "Invalid file format, select a .csv file");
+        if (ext.localeCompare("csv", undefined, {sensitivity: 'base'}) !== 0) {
+            setFileStatus("Invalid file format, select a .csv file");
             return;
         }
 
@@ -53,20 +53,19 @@ function FileHandling() {
     }
 
     return (
-        <div className="file-handling">
+        <div className="file-handling site-section">
             <h3>------------------------- File Upload -------------------------</h3>
-            <div className="file-button-list">
-                <label htmlFor="file-upload" className="file-button">Select File</label>
-                <input id="file-upload" type="file" accept=".csv" onChange={e => onFileUpload(e)}/>
 
-                {uploadFile !== null &&
-                    <button className="file-button" onClick={e => sendFile(e)}>Upload File</button>
-                }
+            <label htmlFor="file-upload" className="file-button">Select File</label>
+            <input id="file-upload" type="file" accept=".csv" onChange={e => onFileUpload(e)}/>
 
-                {downloadBlob !== null &&
-                    <button className="file-button" onClick={e => downloadFile(e)}>Download File</button>
-                }
-            </div>
+            {uploadFile !== null &&
+                <button className="file-button" onClick={e => sendFile(e)}>Upload File</button>
+            }
+
+            {downloadBlob !== null &&
+                <button className="file-button" onClick={e => downloadFile(e)}>Download File</button>
+            }
             <h2 id="file-status">{fileStatus}</h2>
         </div>
     );
