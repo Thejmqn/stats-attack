@@ -225,7 +225,8 @@ func mapCategories(input *outlookData) libraryData {
 			output.PrePostTime = "0"
 			output.Topic = "NONE SPECIFIED"
 		} else {
-			output.School = strings.ReplaceAll(strings.ReplaceAll(types[0][1:], ",", ""), " ", "")
+			school := schoolAbbreviations(types[0][1:])
+			output.School = strings.ReplaceAll(strings.ReplaceAll(school, ",", ""), " ", "")
 			output.RdeSneGroup = strings.ReplaceAll(strings.ReplaceAll(types[1], ",", ""), " ", "")
 			output.Topic = strings.ReplaceAll(strings.ReplaceAll(types[2], ",", ""), " ", "")
 			output.PrePostTime = strings.ReplaceAll(strings.ReplaceAll(types[3], ",", ""), " ", "")
@@ -240,6 +241,15 @@ func mapCategories(input *outlookData) libraryData {
 	output.AdditionalNotes = "Location: " + input.Location
 	output.Description = input.Subject
 	return output
+}
+
+func schoolAbbreviations(school string) string {
+	switch strings.ToLower(school) {
+	case "ash", "humanities", "arts and sciences: humanities":
+		return "arts and sciences: humanities"
+	case "business", "darden":
+		return "business"
+	}
 }
 
 func inputHandler(w http.ResponseWriter, r *http.Request) {
