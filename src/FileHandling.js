@@ -6,6 +6,7 @@ function FileHandling() {
     const [uploadFile, setUploadFile] = useState(null);
     const [downloadBlob, setDownloadBlob] = useState(null);
     const [fileStatus, setFileStatus] = useState("Select a file to upload");
+    const [textInputs, setTextInputs] = useState({firstName: "FirstName", lastName: "LastName", id: "ComputingID"})
 
     const onFileUpload = e => {
         e.preventDefault();
@@ -28,6 +29,9 @@ function FileHandling() {
         }
 
         let formData = new FormData();
+        formData.append("firstName", textInputs.firstName);
+        formData.append("lastName", textInputs.lastName);
+        formData.append("computingID", textInputs.id);
         formData.append("data", uploadFile, "csvfile.csv");
         console.log(formData);
 
@@ -57,6 +61,9 @@ function FileHandling() {
             <h3 className="section-header">------------------------- File Upload -------------------------</h3>
             <h2 id="file-status">{fileStatus}</h2>
             <div className="file-button-list">
+                <input id="first-name" type="text" value={textInputs.firstName} onChange={e => setTextInputs({...textInputs, firstName: e.target.value})}/>
+                <input id="first-name" type="text" value={textInputs.lastName} onChange={e => setTextInputs({...textInputs, lastName: e.target.value})}/>
+                <input id="first-name" type="text" value={textInputs.id} onChange={e => setTextInputs({...textInputs, id: e.target.value})}/>
                 <label htmlFor="file-upload" className="file-button">Select File</label>
                 <input id="file-upload" type="file" accept=".csv" onChange={e => onFileUpload(e)}/>
 
