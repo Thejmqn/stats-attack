@@ -14,6 +14,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
+	"strings"
+	"time"
 )
 
 type outlookData struct {
@@ -45,26 +48,26 @@ type libraryData struct {
 	StartDate              string `csv:"State Date"`
 	InternalNotes          string `csv:"Internal Notes"`
 	EnteredBy              string `csv:"Entered By"`
-	AdditionalNotes        string `csv:"Additional Notes"`
-	AdditionalStaff        string `csv:"Additional Staff"`
-	AdditionalUsers        string `csv:"Additional Users"`
-	ArlInteractionType     string `csv:"ARL Interaction Type"`
-	AttendeeType           string `csv:"Attendee Type"`
 	DateOfTheInteraction   string `csv:"Date of the Interaction"`
-	Department             string `csv:"Department"`
-	Description            string `csv:"Description"`
-	GrantRelated           string `csv:"Grant Related?"`
-	Medium                 string `csv:"Medium"`
-	PrePostTime            string `csv:"Pre-post-time"`
-	PrimaryUserName        string `csv:"Primary User Name"`
-	PrimaryUserComputingID string `csv:"Primary User's Computing ID"`
-	RdeSneGroup            string `csv:"RDS+SNE Group"`
-	Referral               string `csv:"Referral"`
-	School                 string `csv:"School"`
-	SessionDuration        string `csv:"Session Duration"`
-	SourceSoftware         string `csv:"Source/Software"`
 	Staff                  string `csv:"Staff"`
+	AdditionalStaff        string `csv:"Additional Staff"`
+	PrimaryUserComputingID string `csv:"Primary User's Computing ID"`
+	PrimaryUserName        string `csv:"Primary User Name"`
+	AdditionalUsers        string `csv:"Additional Users"`
+	AttendeeType           string `csv:"Attendee Type"`
+	School                 string `csv:"School"`
+	Department             string `csv:"Department"`
+	ArlInteractionType     string `csv:"ARL Interaction Type"`
+	SessionDuration        string `csv:"Session Duration"`
+	PrePostTime            string `csv:"Pre-post-time"`
+	RdeSneGroup            string `csv:"RDS+SNE Group"`
 	Topic                  string `csv:"Topic"`
+	Medium                 string `csv:"Medium"`
+	Description            string `csv:"Description"`
+	Referral               string `csv:"Referral"`
+	GrantRelated           string `csv:"Grant Related?"`
+	SourceSoftware         string `csv:"Source/Software"`
+	AdditionalNotes        string `csv:"Additional Notes"`
 }
 
 func main() {
@@ -151,16 +154,92 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 func handleCSV(data []*outlookData) []*libraryData {
 	var newData []*libraryData
+	const ExportCategory = "Purple category"
 	for _, outlookInstance := range data {
-		var libraryInstance libraryData
-
-		//edit here
-		libraryInstance.StartDate = outlookInstance.StartDate
-		//end here
-
-		newData = append(newData, &libraryInstance)
+		if outlookInstance.Categories == ExportCategory {
+			libraryInstance := mapCategories(outlookInstance)
+			newData = append(newData, &libraryInstance)
+		}
 	}
 	return newData
+}
+
+func mapCategories(input *outlookData) libraryData {
+	var output libraryData
+	output.StartDate = input.StartDate
+	output.Topic = input.Subject
+	output.InternalNotes = ""
+	reName, err := regexp.Compile(`^([^,]+),\s*([^ ]+)`)
+	if err != nil {
+		log.Fatal(err)
+	}
+	name := reName.FindString(input.MeetingOrganizer)
+	if name == "" {
+		output.EnteredBy = "NOT SPECIFIED"
+	} else {
+		output.EnteredBy = name
+	}
+	output.DateOfTheInteraction = input.StartDate
+	digitFinder, err := regexp.Compile(`\(([^)]+)\)`)
+	if err != nil {
+		log.Fatal(err)
+	}
+	librarianDigits := digitFinder.FindString(input.MeetingOrganizer)
+	if err != nil {
+		log.Fatal(err)
+	}
+	userDigits := digitFinder.FindString(input.RequiredAttendees)
+	if userDigits == "" || len(userDigits) < 3 {
+		output.PrimaryUserComputingID = "INVALID ID"
+	} else {
+		output.PrimaryUserComputingID = userDigits[1 : len(userDigits)-1]
+	}
+	if strings.Index(name, " ") < 0 || strings.Index(name, ",") < 0 || len(librarianDigits) < 3 {
+		output.Staff = "INVALID NAME"
+	} else {
+		output.Staff = librarianDigits[1:len(librarianDigits)-1] + " " + name[strings.Index(name, " ")+1:] +
+			" " + name[0:strings.Index(name, ",")]
+	}
+	output.PrimaryUserName = reName.FindString(input.RequiredAttendees) + " "
+	output.School = "College"
+	output.ArlInteractionType = "Other"
+	sc := strings.LastIndex(input.StartTime, ":")
+	ec := strings.LastIndex(input.EndTime, ":")
+	if sc < 0 || ec < 0 {
+		output.SessionDuration = "INVALID TIME"
+	} else {
+		form := "3:04PM"
+		startTime, err := time.Parse(form, strings.ReplaceAll(input.StartTime[:sc]+input.StartTime[sc+3:], " ", ""))
+		endTime, err := time.Parse(form, strings.ReplaceAll(input.EndTime[:ec]+input.EndTime[ec+3:], " ", ""))
+		if err != nil {
+			panic(err)
+		}
+		output.SessionDuration = fmt.Sprint(endTime.Sub(startTime).Hours())
+	}
+	if strings.Index(input.Description, "{") > -1 && strings.Index(input.Description, "}") > -1 {
+		info := input.Description[strings.Index(input.Description, "{"):strings.Index(input.Description, "}")]
+		types := strings.Split(info, ",")
+		if len(types) != 4 {
+			output.School = "NONE SPECIFIED"
+			output.RdeSneGroup = "NONE SPECIFIED"
+			output.PrePostTime = "0"
+			output.Topic = "NONE SPECIFIED"
+		} else {
+			output.School = strings.ReplaceAll(strings.ReplaceAll(types[0][1:], ",", ""), " ", "")
+			output.RdeSneGroup = strings.ReplaceAll(strings.ReplaceAll(types[1], ",", ""), " ", "")
+			output.Topic = strings.ReplaceAll(strings.ReplaceAll(types[2], ",", ""), " ", "")
+			output.PrePostTime = strings.ReplaceAll(strings.ReplaceAll(types[3], ",", ""), " ", "")
+		}
+	} else {
+		output.School = "NONE SPECIFIED"
+		output.RdeSneGroup = "NONE SPECIFIED"
+		output.PrePostTime = "0"
+		output.Topic = "NONE SPECIFIED"
+	}
+	output.ArlInteractionType = "Reference transaction"
+	output.AdditionalNotes = "Location: " + input.Location
+	output.Description = input.Subject
+	return output
 }
 
 func inputHandler(w http.ResponseWriter, r *http.Request) {

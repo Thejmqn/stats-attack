@@ -20,7 +20,7 @@ function FileHandling() {
 
     const sendFile = e => {
         e.preventDefault();
-        const ext = uploadFile.name.split('.').pop();
+        const ext = uploadFile.name.split('.').pop().toLowerCase();
 
         if (ext !== "csv") {
             setFileStatus( "Invalid file format, select a .csv file");
