@@ -5,10 +5,6 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
-	"github.com/dimchansky/utfbom"
-	"github.com/gocarina/gocsv"
-	"github.com/google/uuid"
-	"github.com/gorilla/mux"
 	"io"
 	"io/ioutil"
 	"log"
@@ -17,6 +13,11 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/dimchansky/utfbom"
+	"github.com/gocarina/gocsv"
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 )
 
 type outlookData struct {
@@ -245,10 +246,78 @@ func mapCategories(input *outlookData) libraryData {
 
 func schoolAbbreviations(school string) string {
 	switch strings.ToLower(school) {
-	case "ash", "humanities", "arts and sciences: humanities":
-		return "arts and sciences: humanities"
-	case "business", "darden":
-		return "business"
+	case "ash", "humanities", "arts and sciences: humanities", "Arts & Sciences: Humanities":
+		return "Arts & Sciences: Humanities"
+	case "business", "darden", "Darden":
+		return "Darden"
+	case "arch", "architecture", "Architecture":
+		return "Architecture"
+	case "asi", "arts and sciences: interdisciplinary", "arts & aciences: interdisciplinary":
+		return "Arts & Sciences: Interdisciplinary"
+	case "ass", "arts and sciences: sciences", "arts & sciences: sciences":
+		return "Arts & Sciences: Sciences"
+	case "asss", "arts and sciences: social sciences", "arts & sciences: social sciences":
+		return "Arts & Sciences: Social Sciences"
+	case "batten", "batten (leadership)":
+		return "Batten (Leadership)"
+	case "commerce":
+		return "Commerce"
+	case "community":
+		return "Community"
+	case "ds", "data sciences":
+		return "Data Sciences"
+	case "edu", "education":
+		return "Education"
+	case "engr", "engineering":
+		return "Engineering"
+	case "law":
+		return "Law"
+	case "medicine", "med":
+		return "Medicine"
+	case "nursing":
+		return "Nursing"
+	case "scps", "school of continuing and professional studies":
+		return "School of Continuing and Professional Studies"
+	case "affiliated", "uva affiliated":
+		return "UVA affiliated"
+	default:
+		return ""
+	}
+}
+
+func ARLInteractionTypeAbbreviations(interactionType string) string {
+	switch strings.ToLower(interactionType) {
+
+	case "group", "group presentation":
+		return "Group Presentation"
+	case "other":
+		return "Other"
+	case "reference", "reference transaction":
+		return "Reference transaction"
+
+	default:
+		return ""
+	}
+}
+
+func groupAbbreviation(RDSSNEGroup string) string {
+	switch strings.ToLower(RDSSNEGroup) {
+
+	case "dd", "data discovery":
+		return "Data Discovery"
+	case "rdm", "research data management":
+		return "Research Data Management"
+	case "rl", "research librarianship":
+		return "Research Librarianship"
+	case "rss", "research software support":
+		return "Research Software Support"
+	case "statlab":
+		return "statlab"
+	case "urc", "uva research computing":
+		return "UVA Research Computing"
+
+	default:
+		return ""
 	}
 }
 
