@@ -5,7 +5,7 @@ import {useState} from 'react';
 function FileHandling() {
     const [uploadFile, setUploadFile] = useState(null);
     const [downloadBlob, setDownloadBlob] = useState(null);
-    const [fileStatus, setFileStatus] = useState(null);
+    const [fileStatus, setFileStatus] = useState("Select a file to upload");
 
     const onFileUpload = e => {
         e.preventDefault();
@@ -20,10 +20,10 @@ function FileHandling() {
 
     const sendFile = e => {
         e.preventDefault();
-        const ext = uploadFile.name.split('.').pop();
+        const ext = uploadFile.name.split('.').pop().toLowerCase();
 
-        if (ext.localeCompare("csv", undefined, {sensitivity: 'base'}) !== 0) {
-            setFileStatus("Invalid file format, select a .csv file");
+        if (ext !== "csv") {
+            setFileStatus( "Invalid file format, select a .csv file");
             return;
         }
 
@@ -53,20 +53,21 @@ function FileHandling() {
     }
 
     return (
-        <div className="file-handling site-section">
-            <h3>------------------------- File Upload -------------------------</h3>
-
-            <label htmlFor="file-upload" className="file-button">Select File</label>
-            <input id="file-upload" type="file" accept=".csv" onChange={e => onFileUpload(e)}/>
-
-            {uploadFile !== null &&
-                <button className="file-button" onClick={e => sendFile(e)}>Upload File</button>
-            }
-
-            {downloadBlob !== null &&
-                <button className="file-button" onClick={e => downloadFile(e)}>Download File</button>
-            }
+        <div className="file-handling">
+            <h3 className="section-header">------------------------- File Upload -------------------------</h3>
             <h2 id="file-status">{fileStatus}</h2>
+            <div className="file-button-list">
+                <label htmlFor="file-upload" className="file-button">Select File</label>
+                <input id="file-upload" type="file" accept=".csv" onChange={e => onFileUpload(e)}/>
+
+                {uploadFile !== null &&
+                    <button className="file-button" onClick={e => sendFile(e)}>Upload File</button>
+                }
+
+                {downloadBlob !== null &&
+                    <button className="file-button" onClick={e => downloadFile(e)}>Download File</button>
+                }
+            </div>
         </div>
     );
 }

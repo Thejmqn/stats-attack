@@ -9,7 +9,6 @@ h1, h2, h3 {
 
 .site-section {
     border: 2px solid;
-    border-bottom: 0;
 }
 
 .section-header {
@@ -136,6 +135,7 @@ h1, h2, h3 {
     flex-direction: column;
     align-items: center;
     background-color: rgb(255, 255, 255);
+    border-top: 0;
 }
 
 .instruction-point-list {
@@ -169,7 +169,7 @@ h1, h2, h3 {
     background-color: rgb(242, 241, 241);
     min-height: 350px;
     margin-bottom: 0;
-    border-bottom: 2px;
+    border: 2px;
 }
 
 input[type="file"] {
