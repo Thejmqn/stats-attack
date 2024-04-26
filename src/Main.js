@@ -18,7 +18,7 @@ function App() {
 
             <FileHandling/>
 
-            <div className="footer"></div>
+            <div className="footer site-section"></div>
         </div>
     );
 }

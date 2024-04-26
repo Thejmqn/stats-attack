@@ -1,14 +1,24 @@
-.image-banner img {
-    width: 31%;
-}
-
-h1, h2, h3 {
+h1, h2, h3, h4 {
     font-family: 'Courier New', monospace;
     color: black;
 }
 
 .site-section {
     border: 2px solid;
+    border-bottom: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendar-setup, .file-handling {
+    background-color: rgb(242, 241, 241);
+}
+
+.instructions {
+    background-color: rgb(255, 255, 255);
 }
 
 .section-header {
@@ -41,17 +51,13 @@ h1, h2, h3 {
     column-gap: 10px;
     background-image: url(Images/HeaderBackground4.jpg);
     background-size: 100%;
+
+    img {
+        width: 31%;
+    }
 }
 
-.calendar-setup {
-    background-color: rgb(242, 241, 241);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-}
-
-.setup-point-list {
+.setup-main-container {
     display: flex;
     flex-direction: column;
     width: 70%;
@@ -63,79 +69,37 @@ h1, h2, h3 {
     border: 2px solid;
     align-items: center;
     margin: 1%;
-    padding: 0 10px 0 10px;
+    padding: 0 8px 0 8px;
     justify-items: center;
-}
-
-.setup-point-wide {
-    width: 100%;
-}
-
-.setup-point-thin {
-    width: 40%;
-    align-self: start;
+    font-size: 15px;
 }
 
 .setup-hor-container {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    margin-bottom: 2%;
 }
 
-.setup-hor-container img {
-    border: 2px solid;
-    width: 60%;
-    height: calc(0.78 * 60%);
-    margin: 1%;
-    padding: 10px;
-    justify-self: flex-end;
+.setup-ver-container {
+    width: 100%;
+    padding: 0 5px 0 5px;
 }
 
-.Collapsible__contentInner {
-    margin-bottom: 10px;
-    line-height: 2px;
-    text-wrap: normal;
+.left-side {
+    width: 95%;
+    height: auto;
 }
 
-
-.Collapsible__trigger {
-    display: block;
-    font-family: 'Courier New', monospace;
-    font-weight: bold;
-    cursor: pointer;
-
-    /*&:after {*/
-    /*    content: url("Images/down-chevron.png");*/
-    /*    height: 4px;*/
-    /*    width: 4px;*/
-    /*    !*position: absolute;*!*/
-    /*    !*right: 10px;*!*/
-    /*    !*top: 10px;*!*/
-    /*    display: block;*/
-    /*    transition: transform 300ms;*/
-    /*}*/
-
-    /*&.is-open {*/
-    /*    &:after {*/
-    /*        transform: rotateZ(180deg);*/
-    /*    }*/
-    /*}*/
+.right-side {
+    li {
+        font-size: 14px;
+    }
 }
 
-#abbreviations {
-    align-items: start;
-    line-height: 200%;
-    margin-bottom: 5%;
-}
-
-
-
-.instructions {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: rgb(255, 255, 255);
-    border-top: 0;
+#example-caption {
+    margin-left: 2%;
+    font-size: 100%;
 }
 
 .instruction-point-list {
@@ -156,20 +120,18 @@ h1, h2, h3 {
     padding: 10px;
 }
 
-.instruction-point h4, .setup-point h4 {
-    font-family: 'Courier New', monospace;
-}
-
 .file-handling {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-items: center;
-
-    background-color: rgb(242, 241, 241);
     min-height: 350px;
     margin-bottom: 0;
-    border: 2px;
+}
+
+input[type="text"] {
+    border: 1px inset grey;
+    min-width: calc(175px + 5vw);
+    min-height: calc(7px + 1vh);
+    padding: 0.5%;
+    margin-bottom: calc(2px + 1vh);
+    background-color: #f0f0f0;
 }
 
 input[type="file"] {
@@ -180,7 +142,7 @@ input[type="file"] {
     min-width: calc(175px + 5vw);
     min-height: calc(40px + 1vh);
     padding: 0.5%;
-    margin-bottom: calc(7px + 3vh);
+    margin: calc(4px + 3vh) 0 calc(4px + 3vh) 0;
     border: 3px inset grey;
     background-color: #c3c3c3;
 
