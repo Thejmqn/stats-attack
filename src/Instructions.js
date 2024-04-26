@@ -11,7 +11,7 @@ function Instructions() {
                     <div className='instruction-point'>
                         <h4>1. Export Outlook Calendar</h4>
                         <ul>
-                            <li>Open the Outlook App (cannot be done on browser)</li>
+                            <li>Open the Outlook App in Legacy Mode (cannot be done on browser)</li>
                             <li>Click File {'>'} Open & Export {'>'} Import/Export</li>
                             <li>In the wizard: Click export to a file {'>'} Comma Separated Values, then choose your
                                 calendar
@@ -25,7 +25,7 @@ function Instructions() {
                         <ul>
                             <li>For each event, the first name, last name, and computing ID must be inputted manually.
                             </li>
-                            <li>Enter this information in the text boxes below in the format:
+                            <li>Enter this information in the text boxes below in the format: Insert Format
                                 {/*Someone write the format here*/}
                             </li>
                         </ul>
