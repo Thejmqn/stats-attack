@@ -28,9 +28,9 @@ function CalendarSetup() {
                                 <li>
                                     <p>To fill out all fields in the form, the Event Description needs to contain the
                                         following input in the format:<br/><b> &#123; School &#125; , &#123; ARL
-                                            Interactio
-                                            Type &#125; , &#123; RDS+SNE Group &#125; , &#123; Topic
-                                            &#125; , &#123; Pre-post time &#125;</b></p>
+                                            Interaction
+                                            Type &#125; , &#123; RDS+SNE Group &#125; (&#123; Topic
+                                            &#125;) , &#123; Pre-post time &#125;</b></p>
                                 </li>
                                 <li>
                                     <p><b>School, ARL Interaction Type, and RDS+SNE Group</b> can be abbreviated, look
