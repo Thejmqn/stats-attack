@@ -5,6 +5,10 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"github.com/dimchansky/utfbom"
+	"github.com/gocarina/gocsv"
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	"io"
 	"io/ioutil"
 	"log"
@@ -13,12 +17,13 @@ import (
 	"regexp"
 	"strings"
 	"time"
-
-	"github.com/dimchansky/utfbom"
-	"github.com/gocarina/gocsv"
-	"github.com/google/uuid"
-	"github.com/gorilla/mux"
 )
+
+type formData struct {
+	FirstName   string
+	LastName    string
+	ComputingID string
+}
 
 type outlookData struct {
 	Subject            string `csv:"Subject"`
@@ -91,6 +96,10 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	var librarianInfo formData
+	librarianInfo.FirstName = r.FormValue("firstName")
+	librarianInfo.LastName = r.FormValue("lastName")
+	librarianInfo.ComputingID = r.FormValue("computingID")
 	enableCORS(&w)
 
 	csvFile, err := os.Create(fileName)
@@ -119,7 +128,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	if err := gocsv.UnmarshalBytes(bodyWithoutBom, &dataList); err != nil {
 		panic(err)
 	}
-	updatedRecords := handleCSV(dataList)
+	updatedRecords := handleCSV(dataList, librarianInfo)
 
 	writeFile, err := os.Create(secondFileName)
 	err = gocsv.MarshalFile(&updatedRecords, writeFile)
@@ -153,19 +162,19 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func handleCSV(data []*outlookData) []*libraryData {
+func handleCSV(data []*outlookData, librarianInfo formData) []*libraryData {
 	var newData []*libraryData
 	const ExportCategory = "Purple category"
 	for _, outlookInstance := range data {
 		if outlookInstance.Categories == ExportCategory {
-			libraryInstance := mapCategories(outlookInstance)
+			libraryInstance := mapCategories(outlookInstance, librarianInfo)
 			newData = append(newData, &libraryInstance)
 		}
 	}
 	return newData
 }
 
-func mapCategories(input *outlookData) libraryData {
+func mapCategories(input *outlookData, librarianInfo formData) libraryData {
 	var output libraryData
 	output.StartDate = input.StartDate
 	output.Topic = input.Subject
@@ -174,18 +183,8 @@ func mapCategories(input *outlookData) libraryData {
 	if err != nil {
 		log.Fatal(err)
 	}
-	name := reName.FindString(input.MeetingOrganizer)
-	if name == "" {
-		output.EnteredBy = "NOT SPECIFIED"
-	} else {
-		output.EnteredBy = name
-	}
 	output.DateOfTheInteraction = input.StartDate
 	digitFinder, err := regexp.Compile(`\(([^)]+)\)`)
-	if err != nil {
-		log.Fatal(err)
-	}
-	librarianDigits := digitFinder.FindString(input.MeetingOrganizer)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -195,12 +194,8 @@ func mapCategories(input *outlookData) libraryData {
 	} else {
 		output.PrimaryUserComputingID = userDigits[1 : len(userDigits)-1]
 	}
-	if strings.Index(name, " ") < 0 || strings.Index(name, ",") < 0 || len(librarianDigits) < 3 {
-		output.Staff = "INVALID NAME"
-	} else {
-		output.Staff = librarianDigits[1:len(librarianDigits)-1] + " " + name[strings.Index(name, " ")+1:] +
-			" " + name[0:strings.Index(name, ",")]
-	}
+	output.EnteredBy = librarianInfo.LastName + ", " + librarianInfo.FirstName
+	output.Staff = librarianInfo.ComputingID + " " + librarianInfo.FirstName + " " + librarianInfo.LastName
 	output.PrimaryUserName = reName.FindString(input.RequiredAttendees) + " "
 	output.School = "College"
 	output.ArlInteractionType = "Other"
@@ -222,23 +217,51 @@ func mapCategories(input *outlookData) libraryData {
 		types := strings.Split(info, ",")
 		if len(types) != 4 {
 			output.School = "NONE SPECIFIED"
-			output.RdeSneGroup = "NONE SPECIFIED"
+			output.ArlInteractionType = "Other"
+			output.RdeSneGroup = "Other"
 			output.PrePostTime = "0"
-			output.Topic = "NONE SPECIFIED"
 		} else {
-			school := schoolAbbreviations(types[0][1:])
-			output.School = strings.ReplaceAll(strings.ReplaceAll(school, ",", ""), " ", "")
-			output.RdeSneGroup = strings.ReplaceAll(strings.ReplaceAll(types[1], ",", ""), " ", "")
-			output.Topic = strings.ReplaceAll(strings.ReplaceAll(types[2], ",", ""), " ", "")
+			output.School = schoolAbbreviations(types[0][1:])
+			output.ArlInteractionType = ARLInteractionTypeAbbreviations(types[1])
+			output.RdeSneGroup = groupAbbreviation(types[2])
 			output.PrePostTime = strings.ReplaceAll(strings.ReplaceAll(types[3], ",", ""), " ", "")
 		}
 	} else {
 		output.School = "NONE SPECIFIED"
-		output.RdeSneGroup = "NONE SPECIFIED"
+		output.ArlInteractionType = "Other"
 		output.PrePostTime = "0"
-		output.Topic = "NONE SPECIFIED"
+		output.RdeSneGroup = "Other"
 	}
-	output.ArlInteractionType = "Reference transaction"
+
+	if strings.Contains(strings.ToLower(input.Location), "zoom") {
+		output.Medium = "Zoom"
+	} else if strings.Contains(strings.ToLower(input.Location), "phone") {
+		output.Medium = "Phone"
+	} else if strings.Contains(strings.ToLower(input.Location), "office") {
+		output.Medium = "Office hours - in person"
+	} else if strings.Contains(strings.ToLower(input.Location), "overleaf") {
+		output.Medium = "Overleaf"
+	} else if strings.Contains(strings.ToLower(input.Location), "mail") {
+		output.Medium = "Email"
+	} else {
+		output.Medium = "Scheduled in-person"
+	}
+	nameRE, err := regexp.Compile(`([A-Za-z\-]+),\s([A-Za-z\-]+)`)
+	if err != nil {
+		panic(err)
+	}
+	matches := nameRE.FindAllString(input.RequiredAttendees, -1)
+	matches = append(matches, nameRE.FindAllString(input.OptionalAttendees, -1)...)
+	if len(matches) > 0 {
+		output.PrimaryUserName = strings.Trim(matches[0], " ")
+		var optionalUsers string
+		for i := 1; i < len(matches); i++ {
+			optionalUsers += strings.Trim(matches[i], " ") + ","
+		}
+		output.AdditionalUsers = optionalUsers
+	} else {
+		output.PrimaryUserName = "NO ATTENDEES"
+	}
 	output.AdditionalNotes = "Location: " + input.Location
 	output.Description = input.Subject
 	return output
@@ -252,7 +275,7 @@ func schoolAbbreviations(school string) string {
 		return "Darden"
 	case "arch", "architecture", "Architecture":
 		return "Architecture"
-	case "asi", "arts and sciences: interdisciplinary", "arts & aciences: interdisciplinary":
+	case "asi", "arts and sciences: interdisciplinary", "arts & sciences: interdisciplinary":
 		return "Arts & Sciences: Interdisciplinary"
 	case "ass", "arts and sciences: sciences", "arts & sciences: sciences":
 		return "Arts & Sciences: Sciences"
@@ -266,11 +289,11 @@ func schoolAbbreviations(school string) string {
 		return "Community"
 	case "ds", "data sciences":
 		return "Data Sciences"
-	case "edu", "education":
+	case "ed", "edu", "education":
 		return "Education"
 	case "engr", "engineering":
 		return "Engineering"
-	case "law":
+	case "law", "law school", "school of law":
 		return "Law"
 	case "medicine", "med":
 		return "Medicine"
@@ -281,12 +304,12 @@ func schoolAbbreviations(school string) string {
 	case "affiliated", "uva affiliated":
 		return "UVA affiliated"
 	default:
-		return ""
+		return "UVA affiliated"
 	}
 }
 
 func ARLInteractionTypeAbbreviations(interactionType string) string {
-	switch strings.ToLower(interactionType) {
+	switch strings.Trim(strings.ToLower(interactionType), " ") {
 
 	case "group", "group presentation":
 		return "Group Presentation"
@@ -296,12 +319,17 @@ func ARLInteractionTypeAbbreviations(interactionType string) string {
 		return "Reference transaction"
 
 	default:
-		return ""
+		return "Other"
 	}
 }
 
 func groupAbbreviation(RDSSNEGroup string) string {
-	switch strings.ToLower(RDSSNEGroup) {
+	first, err := regexp.Compile(`([A-Za-z\-]+)`)
+	if err != nil {
+		return "Other"
+	}
+	name := first.FindString(RDSSNEGroup)
+	switch strings.ToLower(name) {
 
 	case "dd", "data discovery":
 		return "Data Discovery"
@@ -311,13 +339,13 @@ func groupAbbreviation(RDSSNEGroup string) string {
 		return "Research Librarianship"
 	case "rss", "research software support":
 		return "Research Software Support"
-	case "statlab":
-		return "statlab"
+	case "sl", "statlab":
+		return "Statlab"
 	case "urc", "uva research computing":
 		return "UVA Research Computing"
 
 	default:
-		return ""
+		return "Other"
 	}
 }
 
