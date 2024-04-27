@@ -217,22 +217,51 @@ func mapCategories(input *outlookData, librarianInfo formData) libraryData {
 		types := strings.Split(info, ",")
 		if len(types) != 4 {
 			output.School = "NONE SPECIFIED"
-			output.RdeSneGroup = "NONE SPECIFIED"
+			output.ArlInteractionType = "Other"
+			output.RdeSneGroup = "Other"
 			output.PrePostTime = "0"
-			output.Topic = "NONE SPECIFIED"
 		} else {
 			output.School = schoolAbbreviations(types[0][1:])
-			output.RdeSneGroup = groupAbbreviation(types[1])
-			output.Topic = strings.ReplaceAll(strings.ReplaceAll(types[2], ",", ""), " ", "")
+			output.ArlInteractionType = ARLInteractionTypeAbbreviations(types[1])
+			output.RdeSneGroup = groupAbbreviation(types[2])
 			output.PrePostTime = strings.ReplaceAll(strings.ReplaceAll(types[3], ",", ""), " ", "")
 		}
 	} else {
 		output.School = "NONE SPECIFIED"
-		output.RdeSneGroup = "NONE SPECIFIED"
+		output.ArlInteractionType = "Other"
 		output.PrePostTime = "0"
-		output.Topic = "NONE SPECIFIED"
+		output.RdeSneGroup = "Other"
 	}
-	output.ArlInteractionType = "Reference transaction"
+
+	if strings.Contains(strings.ToLower(input.Location), "zoom") {
+		output.Medium = "Zoom"
+	} else if strings.Contains(strings.ToLower(input.Location), "phone") {
+		output.Medium = "Phone"
+	} else if strings.Contains(strings.ToLower(input.Location), "office") {
+		output.Medium = "Office hours - in person"
+	} else if strings.Contains(strings.ToLower(input.Location), "overleaf") {
+		output.Medium = "Overleaf"
+	} else if strings.Contains(strings.ToLower(input.Location), "mail") {
+		output.Medium = "Email"
+	} else {
+		output.Medium = "Scheduled in-person"
+	}
+	nameRE, err := regexp.Compile(`([A-Za-z\-]+),\s([A-Za-z\-]+)`)
+	if err != nil {
+		panic(err)
+	}
+	matches := nameRE.FindAllString(input.RequiredAttendees, -1)
+	matches = append(matches, nameRE.FindAllString(input.OptionalAttendees, -1)...)
+	if len(matches) > 0 {
+		output.PrimaryUserName = strings.Trim(matches[0], " ")
+		var optionalUsers string
+		for i := 1; i < len(matches); i++ {
+			optionalUsers += strings.Trim(matches[i], " ") + ","
+		}
+		output.AdditionalUsers = optionalUsers
+	} else {
+		output.PrimaryUserName = "NO ATTENDEES"
+	}
 	output.AdditionalNotes = "Location: " + input.Location
 	output.Description = input.Subject
 	return output
@@ -246,7 +275,7 @@ func schoolAbbreviations(school string) string {
 		return "Darden"
 	case "arch", "architecture", "Architecture":
 		return "Architecture"
-	case "asi", "arts and sciences: interdisciplinary", "arts & aciences: interdisciplinary":
+	case "asi", "arts and sciences: interdisciplinary", "arts & sciences: interdisciplinary":
 		return "Arts & Sciences: Interdisciplinary"
 	case "ass", "arts and sciences: sciences", "arts & sciences: sciences":
 		return "Arts & Sciences: Sciences"
@@ -260,11 +289,11 @@ func schoolAbbreviations(school string) string {
 		return "Community"
 	case "ds", "data sciences":
 		return "Data Sciences"
-	case "edu", "education":
+	case "ed", "edu", "education":
 		return "Education"
 	case "engr", "engineering":
 		return "Engineering"
-	case "law":
+	case "law", "law school", "school of law":
 		return "Law"
 	case "medicine", "med":
 		return "Medicine"
@@ -275,12 +304,12 @@ func schoolAbbreviations(school string) string {
 	case "affiliated", "uva affiliated":
 		return "UVA affiliated"
 	default:
-		return ""
+		return "UVA affiliated"
 	}
 }
 
 func ARLInteractionTypeAbbreviations(interactionType string) string {
-	switch strings.ToLower(interactionType) {
+	switch strings.Trim(strings.ToLower(interactionType), " ") {
 
 	case "group", "group presentation":
 		return "Group Presentation"
@@ -290,12 +319,17 @@ func ARLInteractionTypeAbbreviations(interactionType string) string {
 		return "Reference transaction"
 
 	default:
-		return ""
+		return "Other"
 	}
 }
 
 func groupAbbreviation(RDSSNEGroup string) string {
-	switch strings.ToLower(RDSSNEGroup) {
+	first, err := regexp.Compile(`([A-Za-z\-]+)`)
+	if err != nil {
+		return "Other"
+	}
+	name := first.FindString(RDSSNEGroup)
+	switch strings.ToLower(name) {
 
 	case "dd", "data discovery":
 		return "Data Discovery"
@@ -305,13 +339,13 @@ func groupAbbreviation(RDSSNEGroup string) string {
 		return "Research Librarianship"
 	case "rss", "research software support":
 		return "Research Software Support"
-	case "statlab":
-		return "statlab"
+	case "sl", "statlab":
+		return "Statlab"
 	case "urc", "uva research computing":
 		return "UVA Research Computing"
 
 	default:
-		return ""
+		return "Other"
 	}
 }
 
