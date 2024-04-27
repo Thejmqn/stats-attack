@@ -23,10 +23,9 @@ function Instructions() {
                     <div className="instruction-point">
                         <h4>2. Fill out additional fields</h4>
                         <ul>
-                            <li>For each event, the first name, last name, and computing ID must be inputted manually.
+                            <li>Your first name, last name, and computing ID must be inputted manually.
                             </li>
-                            <li>Enter this information in the text boxes below in the format: Insert Format
-                                {/*Someone write the format here*/}
+                            <li>Enter this information in the text boxes below.
                             </li>
                         </ul>
                     </div>

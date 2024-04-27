@@ -12,9 +12,9 @@ function App() {
 
             <ImageBanner/>
 
-            <CalendarSetup/>
-
             <Instructions/>
+
+            <CalendarSetup/>
 
             <FileHandling/>
 
